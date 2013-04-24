@@ -138,3 +138,7 @@ if (mutators.containsKey("name"))
 Field f = r.fields().named("myField");
 // etc
 ````
+
+# License
+
+Reflect is licensed under MIT.  See License.txt for license.  Copyright 2013, Jeremy Unruh
