@@ -7,11 +7,21 @@
 
 Maven Dependency Setup
 
+Current Release - 1.0.0
 ```xml
 <dependency>
 	<groupId>org.pacesys</groupId>
 	<artifactId>reflect</artifactId>
 	<version>1.0.0</version>
+</dependency>
+```
+
+Current Snapshot (Development) - 1.0.1-SNAPSHOT
+```xml
+<dependency>
+	<groupId>org.pacesys</groupId>
+	<artifactId>reflect</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 ## Field Recipes
