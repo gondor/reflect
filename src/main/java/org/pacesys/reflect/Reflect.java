@@ -203,9 +203,29 @@ public final class Reflect {
 			Reflect.mutatorsFor(type, results);
 			return results;
 		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Method named(String name) {
+			List<Method> results =  Reflect.methodsForRecursive(type, isStaticOnly, Predicates.methodName(name));
+			if (results != null && results.size() > 0)
+				return results.get(0);
+			return null;
+		}
 	}
 	
 	abstract class MemberFinder<T extends AccessibleObject> {
+		
+		/**
+		 * Will find a Field or Method for the specified name.  Note if this is a method then the exact name must be specified.  
+		 * Example a mutator would be setX and an accessor would be getX.  X in this call as the name would yield no result
+		 * @param name the field or method name
+		 * @return the member or null
+		 */
+		public abstract T named(String name);
+		
 		/**
 		 * Will find the given members using the specified predicate (includes super classes)
 		 * @param predicate the predicate used for filtering out the matches

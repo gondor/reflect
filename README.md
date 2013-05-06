@@ -104,6 +104,11 @@ This will find all methods that have been annotated with the specified annotatio
 ```java
 List<Method> methods = Reflect.on(someClass).methods().annotatedWithRecursive(annotation);
 ````
+**Finding a Method by Name**
+
+```java
+Method m = Reflect.on(someClass).methods().named("getPerson");
+```
 **Matching Methods based on a Predicate**
 
 A predicate will allow you to control what is matched and what should be discarded during inspection.  Each method found will be passed to the predicate to return either a true (matched) or false to discard.  The matched list will be returned

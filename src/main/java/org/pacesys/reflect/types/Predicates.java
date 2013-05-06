@@ -3,6 +3,7 @@ package org.pacesys.reflect.types;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -55,17 +56,27 @@ public class Predicates {
 	 * @return Predicate
 	 */
 	public static Predicate<Field> fieldName(String search) {
-		return new FieldByNamePredicate(search);
+		return new MemberByNamePredicate<Field>(search);
+	}
+	
+	/**
+	 * Find Methods by Name
+	 *
+	 * @param search the method name to search for
+	 * @return Predicate
+	 */
+	public static Predicate<Method> methodName(String search) {
+		return new MemberByNamePredicate<Method>(search);
 	}
 
-	static class FieldByNamePredicate implements Predicate<Field> {
+	static class MemberByNamePredicate<T extends Member> implements Predicate<T> {
 
 		String search;
 
-		FieldByNamePredicate(String search) {  this.search = search; }
+		MemberByNamePredicate(String search) {  this.search = search; }
 
 		@Override
-		public boolean apply(Field input) {
+		public boolean apply(T input) {
 			return input.getName().equalsIgnoreCase(search);
 		}
 
