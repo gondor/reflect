@@ -24,6 +24,7 @@ public class Predicates {
 	 * @param annotations the annotations to look for
 	 * @return Predicate
 	 */
+	@SafeVarargs
 	public static <T extends AccessibleObject> Predicate<T> findByAnnotations(Class<? extends Annotation>... annotations) {
 		return new AnnotatedPredicate<T>(annotations);
 	}
@@ -45,7 +46,9 @@ public class Predicates {
 	 * @param <T> Member Type
 	 * @return Predicate
 	 */
-	public static <T extends AccessibleObject> Predicate<T> publicAccess() {
+//	public static <T extends AccessibleObject> Predicate<T> publicAccess() {
+	//TODO changed
+	public static <T extends Member> Predicate<T> publicAccess() {
 		return new PublicAccessPredicate<T>();
 	}
 	
@@ -82,11 +85,13 @@ public class Predicates {
 
 	}
 
-	static class PublicAccessPredicate<T extends AccessibleObject> implements Predicate<T> {
+	static class PublicAccessPredicate<T extends Member> implements Predicate<T> {
 
 		@Override
 		public boolean apply(T input) {
-			return Modifier.isPublic((input instanceof Field) ? ((Field)input).getModifiers() : ((Method)input).getModifiers());
+//			return Modifier.isPublic((input instanceof Field) ? ((Field)input).getModifiers() : ((Method)input).getModifiers());
+			//TODO changes
+			return Modifier.isPublic(input.getModifiers());
 		}
 	}
 
@@ -95,6 +100,7 @@ public class Predicates {
 		
 		Set<Class<? extends Annotation>> annotations;
 		
+		@SafeVarargs
 		AnnotatedPredicate(Class<? extends Annotation>... annotations) {
 			this.annotations = new HashSet<Class<? extends Annotation>>(Arrays.asList(annotations));
 		}

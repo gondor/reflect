@@ -3,7 +3,9 @@ package org.pacesys.reflect;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -30,6 +32,9 @@ public final class Reflect {
 	private static final String PREFIX_IS = "is";
 	
 	public enum AccessorMutatorType { ACCESSOR, MUTATOR, NA }
+	
+	//TODO changes
+	public enum StaticType { STATIC, INSTANCE, ALL }
 	
 	final Class<?> type;
 	private Reflect(Class<?> type) {
@@ -68,8 +73,17 @@ public final class Reflect {
 	 * @param isStaticOnly true if we should only deal with static declared methods
 	 * @return MethodFinder
 	 */
-	public MethodFinder methods(boolean isStaticOnly) {
+	/*public MethodFinder methods(boolean isStaticOnly) {
 		return new MethodFinder(isStaticOnly);
+	}*/
+	
+	//TODO changes
+	/**
+	 * @param staticType {@link StaticType}
+	 * @return
+	 */
+	public MethodFinder methods(StaticType staticType) {
+		return new MethodFinder(staticType);
 	}
 	
 	/**
@@ -77,7 +91,9 @@ public final class Reflect {
 	 * @return MethodFinder
 	 */
 	public MethodFinder methods() {
-		return new MethodFinder(Boolean.FALSE);
+//		return new MethodFinder(Boolean.FALSE);
+		//TODO changes
+		return new MethodFinder(StaticType.ALL);
 	}
 
 	public static class ReflectMethodInvoker {
@@ -104,11 +120,11 @@ public final class Reflect {
 		 */
 		@SuppressWarnings("unchecked")
 		public <T> T call(Object... args) throws ReflectionException {
-			 try {
-					return (T) m.invoke(instance, args);
-				} catch (Exception e) {
-					throw new ReflectionException(e);
-				}
+			try {
+				return (T) m.invoke(instance, args);
+			} catch (Exception e) {
+				throw new ReflectionException(e);
+			}
 		}
 	}
 	
@@ -153,15 +169,20 @@ public final class Reflect {
 	}
 	
 	public class MethodFinder extends MemberFinder<Method> {
-		boolean isStaticOnly;
-		MethodFinder(boolean isStaticOnly) { this.isStaticOnly = isStaticOnly; }
+//		boolean isStaticOnly;
+//		MethodFinder(boolean isStaticOnly) { this.isStaticOnly = isStaticOnly; }
+		//TODO changes
+		StaticType staticType;
+		MethodFinder(StaticType staticType) { this.staticType = staticType; }
 		
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		public List<Method> match(Predicate<Method> predicate) {
-			return Reflect.methodsFor(type, isStaticOnly, predicate);
+//			return Reflect.methodsFor(type, isStaticOnly, predicate);
+			//TODO changes
+			return Reflect.methodsFor(type, staticType, predicate);
 		}
 
 		/**
@@ -169,11 +190,15 @@ public final class Reflect {
 		 */
 		@Override
 		public List<Method> annotatedWith(Class<? extends Annotation>... annotation) {
-			return Reflect.methodsFor(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotation));
+//			return Reflect.methodsFor(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotation));
+			//TODO changes
+			return Reflect.methodsFor(type, staticType, Predicates.<Method>findByAnnotations(annotation));
 		}
 		
 		public List<Method> annotatedWithRecursive(Class<? extends Annotation>... annotation) {
-			return Reflect.methodsForRecursive(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotation));
+//			return Reflect.methodsForRecursive(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotation));
+			//TODO changes
+			return Reflect.methodsForRecursive(type, staticType, Predicates.<Method>findByAnnotations(annotation));
 		}
 
 		/**
@@ -181,7 +206,9 @@ public final class Reflect {
 		 */
 		@Override
 		public List<Method> annotatedWith(Set<Class<? extends Annotation>> annotations) {
-			return Reflect.methodsFor(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotations));
+//			return Reflect.methodsFor(type, isStaticOnly, Predicates.<Method>findByAnnotations(annotations));
+			//TODO changed 
+			return Reflect.methodsFor(type, staticType, Predicates.<Method>findByAnnotations(annotations));
 		}
 		
 		/**
@@ -209,14 +236,16 @@ public final class Reflect {
 		 */
 		@Override
 		public Method named(String name) {
-			List<Method> results =  Reflect.methodsForRecursive(type, isStaticOnly, Predicates.methodName(name));
+//			List<Method> results =  Reflect.methodsForRecursive(type, isStaticOnly, Predicates.methodName(name));
+			//TODO chages
+			List<Method> results =  Reflect.methodsForRecursive(type, staticType, Predicates.methodName(name));
 			if (results != null && results.size() > 0)
 				return results.get(0);
 			return null;
 		}
 	}
 	
-	abstract class MemberFinder<T extends AccessibleObject> {
+	abstract class MemberFinder<T extends Member> {
 		
 		/**
 		 * Will find a Field or Method for the specified name.  Note if this is a method then the exact name must be specified.  
@@ -267,7 +296,7 @@ public final class Reflect {
 	 * @param predicate the Predicate to filter results (optional)
 	 * @return List of Methods which passed or Empty
 	 */
-	private static List<Method> methodsFor(Class<?> type, boolean isStaticOnly, Predicate<Method> predicate) {
+	/*private static List<Method> methodsFor(Class<?> type, boolean isStaticOnly, Predicate<Method> predicate) {
 		List<Method> methods = new ArrayList<Method>();
 		for (Method m : type.getDeclaredMethods()) {
 			if (!isStaticOnly || Modifier.isStatic(m.getModifiers()))
@@ -281,6 +310,55 @@ public final class Reflect {
 			}
 		}
 		return methods;
+	}*/
+	
+	
+	/**
+	 * Apply predicate filter and add into list if it apply(return true)
+	 * 
+	 * @param methods list of methods in which method will be added in case predicate returns the true.
+	 * @param method method which is being to check against the predicate
+	 * @param predicate the predicate
+	 */
+	private static <T extends AccessibleObject> void applyPredicate(List<T> methods, T method, Predicate<T> predicate){
+		if (predicate == null || predicate.apply(method)) {
+			if (!method.isAccessible())
+				method.setAccessible(true);
+			methods.add(method);
+		}
+	}
+	
+	
+	/**
+	 * Finds methods in the given Class and will call the optional predicate for inclusion
+	 * @param type the Class to find static methods for
+	 * @param StaticType decide whether static, or instance or all type of methods
+	 * @param predicate the Predicate to filter results (optional)
+	 * @return List of Methods which passed or Empty
+	 */
+
+	private static List<Method> methodsFor(Class<?> type, StaticType staticType, Predicate<Method> predicate) {
+		List<Method> staticMethods = new ArrayList<Method>();
+		List<Method> instanceMethods = new ArrayList<Method>();
+
+		for (Method m : type.getDeclaredMethods()) {
+			if (Modifier.isStatic(m.getModifiers())) {
+				applyPredicate(staticMethods, m, predicate);
+			} else {
+				applyPredicate(instanceMethods, m, predicate);
+			}
+		}
+
+		switch (staticType) {
+			case STATIC:
+				return staticMethods;
+			case INSTANCE:
+				return instanceMethods;
+			case ALL:
+				staticMethods.addAll(instanceMethods);
+				return staticMethods;
+		}
+		return null;
 	}
 	
 	/**
@@ -290,24 +368,43 @@ public final class Reflect {
 	 * @param predicate the Predicate to filter results (optional)
 	 * @return List of Methods which passed or Empty
 	 */
-	private static List<Method> methodsForRecursive(Class<?> type, boolean isStaticOnly, Predicate<Method> predicate) {
+	/*private static List<Method> methodsForRecursive(Class<?> type, boolean isStaticOnly, Predicate<Method> predicate) {
 		List<Method> methods = new ArrayList<Method>();
 		Class<?> t = type;
-    while (t != null && t != Object.class) 
-    {
-			for (Method m : t.getDeclaredMethods()) {
-				if (!isStaticOnly || Modifier.isStatic(m.getModifiers()))
-				{
-					if (predicate == null || predicate.apply(m))
+	    while (t != null && t != Object.class) 
+	    {
+				for (Method m : t.getDeclaredMethods()) {
+					if (!isStaticOnly || Modifier.isStatic(m.getModifiers()))
 					{
-						if (!m.isAccessible())
-							m.setAccessible(true);
-						methods.add(m);
+						if (predicate == null || predicate.apply(m))
+						{
+							if (!m.isAccessible())
+								m.setAccessible(true);
+							methods.add(m);
+						}
 					}
 				}
-			}
+				t = t.getSuperclass();
+	    }
+		return methods;
+	}*/
+	
+	//TODO changes
+	/**
+	 * Finds methods in the given Class and will call the optional predicate for inclusion
+	 * @param type the Class to find static methods for
+	 * @param staticType {@link StaticType}
+	 * @param predicate the Predicate to filter results (optional)
+	 * @return List of Methods which passed or Empty
+	 */
+	private static List<Method> methodsForRecursive(Class<?> type, StaticType staticType, Predicate<Method> predicate) {
+		List<Method> methods = new ArrayList<Method>();
+		Class<?> t = type;
+	    while (t != null && t != Object.class) 
+	    {
+    		methods.addAll(methodsFor(t, staticType, predicate));
 			t = t.getSuperclass();
-    }
+	    }
 		return methods;
 	}
 	
@@ -350,19 +447,13 @@ public final class Reflect {
 	private static List<Field> fieldsFor(Class<?> type, Predicate<Field> predicate) {
 		List<Field> fields = new ArrayList<Field>();
 		Class<?> t = type;
-    while (t != null && t != Object.class) 
-    {
-    	  for (Field f : t.getDeclaredFields()) {
-    	  	if (predicate == null || predicate.apply(f))
-    	  	{
-	    	  	if (!f.isAccessible())
-	    	  		f.setAccessible(true);
-	    	  	fields.add(f);
-    	  	}
-    	  }
-        t = t.getSuperclass();
-    }
-    return fields;
+	    while (t != null && t != Object.class) {
+	    	  for (Field f : t.getDeclaredFields()) {
+	    		  applyPredicate(fields, f, predicate);
+	    	  }
+	          t = t.getSuperclass(); 
+	    }
+	    return fields;
 	}
 	
 	/**
