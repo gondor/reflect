@@ -1,16 +1,17 @@
 package org.pacesys.reflect.example;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
 import org.pacesys.reflect.Reflect;
-import org.pacesys.reflect.Reflect.StaticType;
+import org.pacesys.reflect.Reflect.MethodType;
 
 /**
  * @author Vishal.Zanzrukia
  *
  */
-public interface ReflectDemo {
+public class ReflectDemo {
 	
 	/**
 	 * return all the methods
@@ -39,7 +40,7 @@ public interface ReflectDemo {
 	 * @return
 	 */
 	public static List<Method> getOnlyPublicStaticMethods(Class<?> clazz){
-		return Reflect.on(clazz).methods(StaticType.STATIC).publicOnly();
+		return Reflect.on(clazz).methods(MethodType.STATIC).publicOnly();
 	}
 	
 	/**
@@ -49,7 +50,17 @@ public interface ReflectDemo {
 	 * @return
 	 */
 	public static List<Method> getOnlyPublicInstanceMethods(Class<?> clazz){
-		return Reflect.on(clazz).methods(StaticType.INSTANCE).publicOnly();
+		return Reflect.on(clazz).methods(MethodType.INSTANCE).publicOnly();
+	}
+	
+	/**
+	 * return only non static methods
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static List<Field> getFileds(Class<?> clazz){
+		return Reflect.on(clazz).fields().all();
 	}
 	
 	
@@ -61,12 +72,22 @@ public interface ReflectDemo {
 		}
 		System.out.println("\n\n\n");
 		System.out.println("-----------public static methods only---------");
+		
+		
+		List<Field> fields = getFileds(TestSubClass.class);
+		for(Field f : fields){
+			System.out.println(f);
+		}
 	}
 	
 }
 
 
 class TestSubperClass{
+	
+	public int aa;
+	
+	public static int aab;
 	
 	public static void publicStaticMethod(){
 		
@@ -87,6 +108,8 @@ class TestSubperClass{
 
 
 class TestSubClass extends TestSubperClass{
+	
+	public int aa;
 	
 	public static void publicStaticMethod(){
 		
