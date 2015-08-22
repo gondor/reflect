@@ -69,6 +69,7 @@ public final class Reflect {
 	}
 	
 	/**
+	 * Reflection options against methods
 	 * @param methodType {@link MethodType}
 	 * @return MethodFinder
 	 */
