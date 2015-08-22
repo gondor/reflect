@@ -14,6 +14,7 @@ import java.util.Set;
  * Common Predicates used for locating members by Field, Annotations, Public Access
  * 
  * @author Jeremy Unruh
+ * @revision Vishal Zanzrukia 
  */
 public class Predicates {
 
@@ -46,8 +47,6 @@ public class Predicates {
 	 * @param <T> Member Type
 	 * @return Predicate
 	 */
-//	public static <T extends AccessibleObject> Predicate<T> publicAccess() {
-	//TODO changed
 	public static <T extends Member> Predicate<T> publicAccess() {
 		return new PublicAccessPredicate<T>();
 	}
@@ -86,11 +85,8 @@ public class Predicates {
 	}
 
 	static class PublicAccessPredicate<T extends Member> implements Predicate<T> {
-
 		@Override
 		public boolean apply(T input) {
-//			return Modifier.isPublic((input instanceof Field) ? ((Field)input).getModifiers() : ((Method)input).getModifiers());
-			//TODO changes
 			return Modifier.isPublic(input.getModifiers());
 		}
 	}
