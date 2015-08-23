@@ -9,11 +9,11 @@
 	<artifactId>reflect</artifactId>
 	<name>Reflect</name>
 	<description>Fluent Reflection to cut down on boiler plate</description>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<url>http://github.com/gondor/reflect</url>
 	<packaging>jar</packaging>
 	<properties>
-		<release.version>1.0.0</release.version>
+		<release.version>1.0.1</release.version>
 	</properties>
 	<licenses>
 		<license>
